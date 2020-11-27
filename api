@@ -1,0 +1,65 @@
+//tech: node.js + mongoose
+
+//import components
+const https = require('https');
+const mongoose = require('mongoose');
+
+const options = new URL('https://www.boredapi.com/api/activity');
+
+//connect to MongoDB
+mongoose.connect('<YOUR_CONNECTION_STRING>',
+{
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log("MongoDb connected"))
+.catch(err => console.log(err));
+
+//obtain data using GET
+https.get(options, (res) => {
+  console.log('statusCode:', res.statusCode);
+  //console.log('headers:', res.headers);
+
+  res.on('data', (data) => {
+    //process.stdout.write(data);
+    //display returned data by API
+    //console.log(JSON.parse(data));
+    callback(data);
+  });
+})
+
+.on('error', (err) => {
+  console.error(err);
+})
+;
+
+//retrive data and load
+function callback(value){
+   console.log(JSON.parse(value));
+   let valueMod = JSON.parse(value);
+
+   // define collection schema
+   const ActivityAPI = mongoose.Schema({
+     //_id: mongoose.Schema.Types.ObjectId,
+     //id: new mongoose.Types.ObjectId(),
+     activity: {type: String, required: true},
+     type: {type: String, required: true},
+     key: {type: Number, required: true}
+   });
+
+   // compile schema to model
+   let Activity = mongoose.model('Activity', ActivityAPI, 'activityapiSchema' );
+
+   // capture an activity
+   let activity1 = new Activity({
+     //_id: valueMod._id,
+     activity: valueMod.activity,
+     type: valueMod.type,
+     key: valueMod.key });
+
+     // insert to database
+     activity1.save(function (err, act) {
+       if (err) return console.error(err);
+       //console.log(act.name);
+     });
+};
