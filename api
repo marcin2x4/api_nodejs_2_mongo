@@ -16,15 +16,15 @@ mongoose.connect('<YOUR_CONNECTION_STRING>',
 .catch(err => console.log(err));
 
 //obtain data using GET
-https.get(options, (res) => {
-  console.log('statusCode:', res.statusCode);
+https.get(options, (response) => {
+  console.log('statusCode:', response.statusCode);
   //console.log('headers:', res.headers);
 
-  res.on('data', (data) => {
+  res.on('data', (activity_json) => {
     //process.stdout.write(data);
     //display returned data by API
     //console.log(JSON.parse(data));
-    callback(data);
+    zapis_do_bazy(activity_json);//callback(data); funkcja do wykonania na odpowiedzi
   });
 })
 
@@ -34,9 +34,9 @@ https.get(options, (res) => {
 ;
 
 //retrive data and load
-function callback(value){
-   console.log(JSON.parse(value));
-   let valueMod = JSON.parse(value);
+function zapis_do_bazy(activity_json){
+   console.log(JSON.parse(activity_json));
+   let valueMod = JSON.parse(activity_json);
 
    // define collection schema
    const ActivityAPI = mongoose.Schema({
